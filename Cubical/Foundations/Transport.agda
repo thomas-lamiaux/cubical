@@ -169,7 +169,24 @@ substInPaths {a = a} f g p q =
            ≡⟨ (rUnit q) ∙ lUnit (q ∙ refl) ⟩ refl ∙ q ∙ refl ∎
 
 -- special cases of substInPaths from lemma 2.11.2 in The Book
-module _ {ℓ : Level} {A : Type ℓ} {a x1 x2 : A} (p : x1 ≡ x2) where
+module _ {ℓ : Level} {A B : Type ℓ} (f : A → B)
+         {x1 x2 : A} {b : B} (p : x1 ≡ x2)
+  where
+
+  substInPathsfL : (q : b ≡ f x1) → subst (λ x →  b ≡ f x) p q ≡  q ∙ (cong f p)
+  substInPathsfL q = subst (λ x → b ≡ f x) p q  ≡⟨ substInPaths (λ x → b) f p q ⟩
+                     refl ∙ q ∙ (cong f p)       ≡⟨ sym (lUnit _) ⟩
+                     q ∙ cong f p ∎
+
+  substInPathsfR : (q : f x1 ≡ b) → subst (λ x →  f x ≡ b) p q ≡ sym (cong f p) ∙ q
+  substInPathsfR q = subst (λ x →  f x ≡ b) p q   ≡⟨ substInPaths f (λ x → b) p q ⟩
+                     sym (cong f p) ∙ (q ∙ refl)   ≡⟨ assoc _ _ _ ∙ sym (rUnit _) ⟩
+                     sym (cong f p) ∙ q ∎
+
+module _ {ℓ : Level} {A : Type ℓ}
+         {a x1 x2 : A} (p : x1 ≡ x2)
+  where
+
   substInPathsL : (q : a ≡ x1) → subst (λ x → a ≡ x) p q ≡ q ∙ p
   substInPathsL q = subst (λ x → a ≡ x) p q
     ≡⟨ substInPaths (λ _ → a) (λ x → x) p q ⟩

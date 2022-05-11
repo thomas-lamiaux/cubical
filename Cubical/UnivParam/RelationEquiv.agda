@@ -2,9 +2,14 @@
 module Cubical.UnivParam.RelationEquiv where
 
 open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.GroupoidLaws
+open import Cubical.Foundations.Function
 open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Transport
 open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Equiv.HalfAdjoint
 open import Cubical.Foundations.HLevels
+open import Cubical.Foundations.Path
 
 open import Cubical.Data.Sigma
 
@@ -51,6 +56,7 @@ module UnivRel-Equiv
   where
 
   open UnivRel
+  open isHAEquiv
 
 -----------------------------------------------------------------------------
 -- Direct sens
@@ -93,4 +99,26 @@ module UnivRel-Equiv
   Equiv→Rop e a = isContrSingl (fun e a)
 
   Iso→symRop : {A B : Type ℓ} → (e : Iso A B ) → Op (symRel (Iso→R e))
-  Iso→symRop e b = ((inv e b) , (rightInv e b)) , {!!}
+  Iso→symRop e b = ((inv e b) , (rightInv e b)) , helper
+    where
+    helper : _
+    helper (a , p) = ΣPathTransport→PathΣ _ _
+                     (sym (cong (inv e) p) ∙ leftInv e a ,
+                     (subst (λ x → fun e x ≡ b) (sym (cong (inv e) p) ∙ leftInv e a) (rightInv e b)
+                            ≡⟨ substInPathsfR (fun e) (sym (cong (inv e) p) ∙ leftInv e a) (rightInv e b) ⟩
+                     sym (cong (fun e) (sym (cong (inv e) p) ∙ leftInv e a)) ∙ rightInv e b
+                             ≡⟨ cong (λ X → sym X ∙ rightInv e b)
+                                     (cong-∙ (fun e) (sym (cong (inv e) p)) (leftInv e a)) ⟩
+                     sym (cong (fun e) (sym (cong (inv e) p)) ∙ cong (fun e) (leftInv e a)) ∙ rightInv e b
+                             ≡⟨ cong (λ X → X ∙ rightInv e b)
+                                     (symDistr (cong (fun e) (sym (cong (inv e) p)))
+                                     (cong (fun e) (leftInv e a))) ⟩
+                     (sym (cong (fun e) (leftInv e a)) ∙ cong ((fun e) ∘ (inv e)) (sym (sym p))) ∙ rightInv e b
+                             ≡⟨ cong (λ X → (sym (cong (fun e) (leftInv e a)) ∙ cong ((fun e) ∘ (inv e)) X) ∙ rightInv e b)
+                                     (symInvo p) ⟩
+                     (sym (cong (fun e) (leftInv e a)) ∙ cong ((fun e) ∘ (inv e)) p) ∙ rightInv e b
+                            ≡⟨  cong (λ X → (sym X ∙ cong ((fun e) ∘ (inv e)) p) ∙ rightInv e b)
+                                      ((snd (iso→HAEquiv e)) .com a) ⟩
+                     {!!}       ≡⟨ {!!} ⟩ -- Plus le meme rightInv !!! => travailler directement avec HAE
+                     {!!}       ≡⟨ {!!} ⟩
+                     {!!} ∎) )
