@@ -24,16 +24,6 @@ open Iso
    x, xa, xl for evidence of their relation between elements
 -}
 
-Σ-swap : (A B : Type ℓ) → (C : (a : A) → (b : B) → Type ℓ) →
-         (Σ[ a ∈ A ] Σ[ b ∈ B ] C a b) ≃ (Σ[ b ∈ B ] Σ[ a ∈ A ] C a b)
-Σ-swap A B C = isoToEquiv is
-  where
-  is : Iso (Σ[ a ∈ A ] Σ[ b ∈ B ] C a b) (Σ[ b ∈ B ] Σ[ a ∈ A ] C a b)
-  fun is (a , b , c) = b , (a , c)
-  inv is (b , a , c) = a , (b , c)
-  rightInv is = λ _ → refl
-  leftInv is = λ _ → refl
-
 RL : {A A' : Type ℓ} → (RA : A → A' → Type ℓ) → Rel (List A) (List A')
 RL RA []       []        = Unit*
 RL RA []      (a' ∷ l')  = ⊥*

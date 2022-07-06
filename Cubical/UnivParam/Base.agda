@@ -2,6 +2,8 @@
 module Cubical.UnivParam.Base where
 
 open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.HLevels
 
 open import Cubical.Data.Sigma
@@ -33,3 +35,15 @@ _⋈_ A B = Σ[ R ∈ Rel  A B ] isUnivRel R
 
 sym⋈ : {A B : Type ℓ} → A ⋈ B → B ⋈ A
 sym⋈ (R , Rop , symRop) = (symRel R) , (symRop , Rop)
+
+open Iso
+
+Σ-swap : (A B : Type ℓ) → (C : (a : A) → (b : B) → Type ℓ) →
+         (Σ[ a ∈ A ] Σ[ b ∈ B ] C a b) ≃ (Σ[ b ∈ B ] Σ[ a ∈ A ] C a b)
+Σ-swap A B C = isoToEquiv is
+  where
+  is : Iso (Σ[ a ∈ A ] Σ[ b ∈ B ] C a b) (Σ[ b ∈ B ] Σ[ a ∈ A ] C a b)
+  fun is (a , b , c) = b , (a , c)
+  inv is (b , a , c) = a , (b , c)
+  rightInv is = λ _ → refl
+  leftInv is = λ _ → refl
