@@ -24,17 +24,33 @@ open Iso
    x, xa, xl for evidence of their relation between elements
 -}
 
-RL : {A A' : Type ℓ} → (RA : A → A' → Type ℓ) → Rel (List A) (List A')
-RL RA []       []        = Unit*
-RL RA []      (a' ∷ l')  = ⊥*
-RL RA (a ∷ l)  []        = ⊥*
-RL RA (a ∷ l) (a' ∷ l')  = Σ[ xa ∈ RA a a' ] RL RA l l'
+module funRL where
 
-module _
+  RL : {A A' : Type ℓ} → (RA : A → A' → Type ℓ) → Rel (List A) (List A')
+  RL RA []       []        = Unit*
+  RL RA []      (a' ∷ l')  = ⊥*
+  RL RA (a ∷ l)  []        = ⊥*
+  RL RA (a ∷ l) (a' ∷ l')  = Σ[ xa ∈ RA a a' ] RL RA l l'
+
+module indRL
+  {A : Type ℓ}
+  {A' : Type ℓ}
+  (RA : Rel A A')
+  where
+
+  data RL : Rel (List A) (List A') where
+    []* : RL [] []
+    cst* : (a : A) → (a' : A') → (xa : RA a a') →
+           (l : List A) → (l' : List A') → (xl : RL l l') →
+           RL (a ∷ l) (a' ∷ l')
+
+module M1
   {A : Type ℓ}
   {A' : Type ℓ}
   (RAu@(RA , RAstr) : A ⋈ A')
   where
+
+  open funRL
 
   module _ where
     codeRL : (l : List A) → Type ℓ
@@ -81,11 +97,14 @@ module _
                     (Σ[ a' ∈ A' ] RA a a') ■ ))
                    (fst RAstr a)
 
-module _
+module M1sym
   {A : Type ℓ}
   {A' : Type ℓ}
   (RAu@(RA , RAstr) : A ⋈ A')
   where
+
+  open funRL
+  open M1
 
   symRL : (l : List A) → (l' : List A') → symRel (RL RA) l' l ≃ RL (symRel RA) l' l
   symRL []       []       = idEquiv _
@@ -101,3 +120,23 @@ module _
 
   RL⋈ : List A ⋈ List A'
   RL⋈ = (RL RA) , ((isOpRL RAu) , isOpSymRL)
+
+
+module M2
+  {A : Type ℓ}
+  {A' : Type ℓ}
+  (RAu@(RA , RAstr) : A ⋈ A')
+  where
+
+  open indRL
+
+  centerRL : (l : List A) → Σ[ l' ∈ List A' ] RL RA l l'
+  centerRL [] = [] , []*
+  centerRL (a ∷ l) = {!!} , {!!}
+
+  eqCenter : (l : List A) → (y : Σ[ l' ∈ List A' ] RL RA l l') → y ≡ centerRL l
+  eqCenter .[] (.[] , []*) = refl
+  eqCenter .(a ∷ l) (.(a' ∷ l') , cst* a a' xa l l' snd₁) = {!!}
+
+  isOpRL : isOp (RL RA)
+  isOpRL l = (centerRL l) , {!!}
