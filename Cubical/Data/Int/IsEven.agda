@@ -14,17 +14,7 @@ open import Cubical.Data.Nat
    _·_    to _·ℕ_ ;
    isEven to isEvenℕ ;
    isOdd  to isOddℕ)
-open import Cubical.Data.Nat.IsEven
-  using ()
-  renaming
-  (isEvenFalse  to isEvenℕFalse   ;
-   isEvenTrue   to isEvenℕTrue    ;
-   isOddFalse   to isOddℕFalse    ;
-   isOddTrue    to isOddℕTrue     ;
-   falseIsEven  to falseIsEvenℕ   ;
-   trueIsEven   to trueIsEvenℕ    ;
-   ¬IsEvenFalse to ¬IsEvenℕFalse  ;
-   ¬IsEvenTrue  to ¬IsEvenℕTrue   )
+import Cubical.Data.Nat.IsEven as ℕ
 
 open import Cubical.Data.Int
 open import Cubical.Data.Sum
@@ -65,38 +55,38 @@ open GroupStr (snd BoolGroup) using ()
 isEvenTrue : (a : ℤ) → (isEven a ≡ true) → Σ[ m ∈ ℤ ] a ≡ (2 · m)
 isEvenTrue (pos n) p = (pos k) , (cong pos pp ∙ pos·pos 2 k )
   where
-  k = fst (isEvenℕTrue n p)
-  pp = snd (isEvenℕTrue n p)
+  k = fst (ℕ.isEvenTrue n p)
+  pp = snd (ℕ.isEvenTrue n p)
 isEvenTrue (negsuc n) p = (negsuc k) , cong negsuc pp ∙ sym (2negsuc k)
   where
-  k = fst (isOddℕTrue n p)
-  pp = snd (isOddℕTrue n p)
+  k = fst (ℕ.isOddTrue n p)
+  pp = snd (ℕ.isOddTrue n p)
 
 isEvenFalse : (a : ℤ) → (isEven a ≡ false) → Σ[ m ∈ ℤ ] a ≡ 1 + (2 · m)
 isEvenFalse (pos n) p = (pos k) , (cong pos pp ∙ 1+2kPos k)
   where
-  k = fst (isEvenℕFalse n p)
-  pp = snd (isEvenℕFalse n p)
+  k = fst (ℕ.isEvenFalse n p)
+  pp = snd (ℕ.isEvenFalse n p)
 isEvenFalse (negsuc n) p = (negsuc k) , (cong negsuc pp ∙ sym (1+2kNegsuc k))
   where
-  k = fst (isOddℕFalse n p)
-  pp = snd (isOddℕFalse n p)
+  k = fst (ℕ.isOddFalse n p)
+  pp = snd (ℕ.isOddFalse n p)
 
 
 -- 2k → isEven / 1 + 2k → isOdd
 trueIsEven : (a : ℤ)  → Σ[ m ∈ ℤ ] a ≡ (2 · m) → (isEven a ≡ true)
-trueIsEven (pos n) (pos m , p) = trueIsEvenℕ n (m , injPos (p ∙ sym (pos·pos 2 m)))
+trueIsEven (pos n) (pos m , p) = ℕ.trueIsEven n (m , injPos (p ∙ sym (pos·pos 2 m)))
 trueIsEven (pos n) (negsuc m , p) = ⊥.rec (posNotnegsuc n (1 +ℕ 2 ·ℕ m) (p ∙ 2negsuc m))
 trueIsEven (negsuc n) (pos m , p) = ⊥.rec (negsucNotpos n (2 ·ℕ m) (p ∙ sym (pos·pos 2 m)))
-trueIsEven (negsuc n) (negsuc m , p) = ¬IsEvenℕFalse n (falseIsEvenℕ n
+trueIsEven (negsuc n) (negsuc m , p) = ℕ.¬IsEvenFalse n (ℕ.falseIsEven n
                                        (m , (injNegsuc (p ∙ 2negsuc m))))
 
 falseIsEven : (a : ℤ) → Σ[ m ∈ ℤ ] a ≡ 1 + (2 · m) → isEven a ≡ false
-falseIsEven (pos n) (pos m , p) = falseIsEvenℕ n
+falseIsEven (pos n) (pos m , p) = ℕ.falseIsEven n
                                   (m , (injPos (p ∙ sym (1+2kPos m))))
 falseIsEven (pos n) (negsuc m , p) = ⊥.rec (posNotnegsuc n (2 ·ℕ m) (p ∙ 1+2kNegsuc m))
 falseIsEven (negsuc n) (pos m , p) = ⊥.rec (negsucNotpos n (1 +ℕ 2 ·ℕ m) (p ∙ sym (1+2kPos m)))
-falseIsEven (negsuc n) (negsuc m , p) = ¬IsEvenℕTrue n (trueIsEvenℕ n (m , (injNegsuc (p ∙ 1+2kNegsuc m ))))
+falseIsEven (negsuc n) (negsuc m , p) = ℕ.¬IsEvenTrue n (ℕ.trueIsEven n (m , (injNegsuc (p ∙ 1+2kNegsuc m ))))
 
 
 -- Value of isEven (x + y)  depending on IsEven x, IsEven y
