@@ -11,7 +11,11 @@ open import Cubical.Algebra.DirectSum.DirectSumHIT.Properties
 private variable
   ℓ ℓ' : Level
 
-module _ (Idx : Type ℓ) (P : Idx → Type ℓ') (AGP : (r : Idx) → AbGroupStr (P r)) where
+module _
+  (Idx : Type ℓ)
+  (P : Idx → Type ℓ')
+  (AGP : (r : Idx) → AbGroupStr (P r))
+  where
 
   open AbGroupStr
   open AbGroupProperties Idx P AGP
