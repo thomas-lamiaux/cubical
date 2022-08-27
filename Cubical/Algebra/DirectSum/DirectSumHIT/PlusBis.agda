@@ -211,7 +211,7 @@ module +BisPol
           (λ k a → DS-Ind-Prop.f _ _ _ _ (λ _ → isPropSingl)
                     ((baseBis k a) , +IdR (snd (⊕HIT-AbGr Idx (λ _ → G) (λ _ → Gstr))) _ ∙ (base≡baseBis _ _))  -- *
                     (λ l b → cbnBaseBase k l a b)
-                    λ {U} {V} ind-U ind-V → cbnBaseAdd k a V U)
+                    λ {U} {V} ind-U ind-V → cbnBaseAdd k a V ind-V {!!} )
           λ {U V} ind-U ind-V y → fst (ind-U (fst (ind-V y))) ,
                                    sym (+Assoc (snd (⊕HIT-AbGr Idx (λ _ → G) (λ _ → Gstr))) _ _ _ )
                                    ∙ cong (λ X → U add X) (snd (ind-V y))
@@ -226,10 +226,13 @@ module +BisPol
                   ∙ base≡baseBis _ _
     ... | no ¬p = (baseBis k a add baseBis l b) , (cong₂ _add_ (base≡baseBis _ _) (base≡baseBis _ _))
 
-    cbnBaseAdd : (k : Idx) → (a : G) → (V U : ⊕HIT Idx (λ _ → G) (λ _ → Gstr))
+    cbnBaseAdd : (k : Idx) → (a : G) → (V : ⊕HIT Idx (λ _ → G) (λ _ → Gstr))
+                 → (ind-V : Σ[ z ∈ ⊕HIT Idx (λ _ → G) (λ _ → Gstr) ] base k a add V ≡ z)
+                 → (U : ⊕HIT Idx (λ _ → G) (λ _ → Gstr))
                  → Σ[ z ∈ ⊕HIT Idx (λ _ → G) (λ _ → Gstr) ] (base k a add (U add V) ≡ z)
-    cbnBaseAdd k a V = DS-Ind-Prop.f _ _ _ _ (λ _ → isPropSingl)
-                       ((baseBis k a add V) , cong₂ _add_ (base≡baseBis k a) (addComm _ _ ∙ addRid _))
+    cbnBaseAdd k a V ind-V = DS-Ind-Prop.f _ _ _ _ (λ _ → isPropSingl)
+                       ((fst ind-V) ,
+                       (cong (λ X → base k a add X) (addComm _ _ ∙ addRid _) ∙ snd ind-V))
                        (λ l b → helper l b )
                        λ {U} {U'} ind-U ind-U' → (base k a add ((U add U') add V)) , refl
 
@@ -274,13 +277,15 @@ module +BisPol
   invBis : ⊕HIT Idx (λ _ → G) (λ _ → Gstr) → ⊕HIT Idx (λ _ → G) (λ _ → Gstr)
   invBis = DS-Rec-Set.f _ _ _ _ trunc
            neutral
-           base
+           (λ k a → base k ((- Gstr) a))
            (λ xs ys → ys addBis xs)
            (λ xs ys zs → sym (addBisAssoc zs ys xs))
            (λ xs → addBisComm neutral xs ∙ addBisIdR xs)
            (λ xs ys → addBisComm ys xs)
-           base-neutral
-           λ r a b → base-eq r a b
+           (λ k → {!!})
+           {!!}
+           -- base-neutral
+           -- λ r a b → base-eq r a b
 
     where
     base-eq : (r : Idx) → (a b : G) → (base r b addBis base r a) ≡ base r ((Gstr + a) b)
@@ -327,6 +332,10 @@ module PolynomialExamples where
   -- U≡neutral : U ≡ neutral
   -- U≡neutral = {!refl!}
   -- Big bug, nothing simplifie exacte the 0
+
+  PP = P1' addBis Q1'
+  qq = invBis PP
+  pq = PP addBis qq
 
   R' = R
   Rinv' = Rinv
