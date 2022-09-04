@@ -61,7 +61,7 @@ module Examples
   P2' = ((base' 1 4) add' neutral) add' (((neutral add' neutral) add' neutral) add' (base' 5 8))
 
 
-  -- Q = 17 + X^2
+  -- Q = 17X + X^2
   QNorm0 : ⊕HIT ℕ (λ _ → ℤ) (λ _ → snd ℤAbGroup)
   QNorm0 = base 1 17 add base 2 1
 
@@ -69,11 +69,11 @@ module Examples
   Q1' : ⊕HIT ℕ (λ _ → ℤ) (λ _ → snd ℤAbGroup)
   Q1' = base' 1 17 add' (base' 0 0 add' base' 2 1)
 
-  -- Q2 = 12X + (5X + (0 + X²))
+  -- Q2 = 12X + (5X + (0X⁰ + X²))
   Q2' : ⊕HIT ℕ (λ _ → ℤ) (λ _ → snd ℤAbGroup)
   Q2' = base' 1 12 add' (base' 1 5 add' (base' 0 0 add' base' 2 1))
 
-  -- Q3 = (12X + (0 + (5X + 0))) + (0X + X²)
+  -- Q3 = (12X + (0 + (5X + 0))) + (0X⁰ + X²)
   Q3' : ⊕HIT ℕ (λ _ → ℤ) (λ _ → snd ℤAbGroup)
   Q3' = (base' 1 12 add' (neutral add' (base' 1 5 add' neutral))) add' (base' 0 0 add' base' 2 1)
 
@@ -211,7 +211,7 @@ module +BisPol
           (λ k a → DS-Ind-Prop.f _ _ _ _ (λ _ → isPropSingl)
                     ((baseBis k a) , +IdR (snd (⊕HIT-AbGr Idx (λ _ → G) (λ _ → Gstr))) _ ∙ (base≡baseBis _ _))  -- *
                     (λ l b → cbnBaseBase k l a b)
-                    λ {U} {V} ind-U ind-V → cbnBaseAdd k a V ind-V {!!} )
+                    λ {U} {V} ind-U ind-V → cbnBaseAdd k a V ind-V U )
           λ {U V} ind-U ind-V y → fst (ind-U (fst (ind-V y))) ,
                                    sym (+Assoc (snd (⊕HIT-AbGr Idx (λ _ → G) (λ _ → Gstr))) _ _ _ )
                                    ∙ cong (λ X → U add X) (snd (ind-V y))
